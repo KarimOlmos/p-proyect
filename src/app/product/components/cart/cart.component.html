@@ -64,15 +64,13 @@
 
   <!-- Total y botón "Confirmar pedido" -->
   <div class="mt-4 text-center">
-    <p class="font-bold text-xl text-green-600">Total: ${{ total }}</p>
+    <p class="font-bold text-xl text-green-600">Total: ${{ total | number:'1.2-2' }}</p>
     <button
       class="mt-4 bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700 w-full transition duration-300 shadow-md hover:shadow-lg"
       routerLink="/order-confirmation"
     >
       Confirmar pedido
     </button>
-
-
   </div>
 
 

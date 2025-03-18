@@ -3,12 +3,13 @@ import { CartService } from '../../services/cart.service';
 import { Subscription } from 'rxjs';
 import { CartItem } from '../../interfaces/cart.interface';
 import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
   templateUrl: './cart.component.html',
-  imports: [RouterLink],
+  imports: [RouterLink, CommonModule],
 })
 export class CartComponent implements OnInit, OnDestroy {
   cart: CartItem[] = [];
@@ -37,4 +38,7 @@ export class CartComponent implements OnInit, OnDestroy {
   clearCart(): void {
     this.cartService.clearCart();
   }
+
+
+
 }
