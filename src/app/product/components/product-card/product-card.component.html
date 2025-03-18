@@ -1,0 +1,45 @@
+<div *ngIf="product; else noProduct" class="card bg-base-100 shadow-sm max-w-xs m-0 p-2">
+  <figure class="m-0">
+    <img
+      [src]="product.imageUrl || 'assets/default-image.jpg'"
+      [alt]="product.name || 'Producto sin nombre'"
+      class="w-full h-40 object-cover"
+    />
+  </figure>
+  <div class="card-body p-2">
+    <h2 class="card-title text-center text-lg">{{ product.name || 'Sin nombre' }}</h2>
+    <p class="text-sm text-center">{{ product.description || 'Sin descripción' }}</p>
+    <!-- Contenedor flex para alinear precio, cantidad y botón -->
+    <div class="flex items-center justify-between mt-3">
+      <p class="text-left font-bold text-lg">{{ product.price | currency : 'USD' : 'symbol' : '1.2-2' }}</p>
+      <div class="flex items-center space-x-2">
+        <button
+          (click)="decreaseQuantity()"
+          class="btn btn-sm btn-circle btn-error"
+          [disabled]="quantity <= 1"
+        >
+          -
+        </button>
+        <span class="text-lg font-medium">{{ quantity }}</span>
+        <button
+          (click)="increaseQuantity()"
+          class="btn btn-sm btn-circle btn-success"
+        >
+          +
+        </button>
+      </div>
+    </div>
+    <button
+      class="btn bg-pink-600 hover:bg-pink-700 text-white text-sm w-full mt-3"
+      (click)="addToCart()"
+    >
+      Agregar al carrito
+    </button>
+  </div>
+</div>
+
+<ng-template #noProduct>
+  <div class="text-center text-red-500">
+    Producto no disponible.
+  </div>
+</ng-template>

@@ -1,0 +1,79 @@
+<aside class="w-80 bg-gray-800 p-4 shadow-lg flex flex-col h-full">
+  <!-- Título del carrito y botón "Vaciar carrito" -->
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-bold text-pink-600">Carrito</h2>
+    <button
+      (click)="clearCart()"
+      class="flex items-center gap-2 text-red-500 hover:text-red-600 font-medium text-sm"
+    >
+      <!-- Icono de papelera -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+        />
+      </svg>
+      Vaciar carrito
+    </button>
+  </div>
+
+  <!-- Lista de productos en el carrito -->
+  <ul class="flex-grow overflow-y-auto space-y-4">
+    @for (item of cart; track item.product.id) {
+      <li class="flex justify-between items-center border-b border-gray-700 pb-2">
+        <div>
+          <p class="font-medium text-white">{{ item.product.name }}</p>
+          <p class="text-sm text-gray-400">
+            {{ item.quantity }} x ${{ item.product.price }}
+          </p>
+          <p class="text-sm text-green-500 font-bold">
+            Subtotal: ${{ item.quantity * item.product.price }}
+          </p>
+        </div>
+        <button
+          (click)="removeFromCart(item.product.id)"
+          class="bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center transition duration-300"
+        >
+          <!-- Icono de la cruz -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </li>
+    }
+  </ul>
+
+  <!-- Total y botón "Confirmar pedido" -->
+  <div class="mt-4 text-center">
+    <p class="font-bold text-xl text-green-600">Total: ${{ total }}</p>
+    <button
+      class="mt-4 bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700 w-full transition duration-300 shadow-md hover:shadow-lg"
+      routerLink="/order-confirmation"
+    >
+      Confirmar pedido
+    </button>
+
+
+  </div>
+
+
+</aside>

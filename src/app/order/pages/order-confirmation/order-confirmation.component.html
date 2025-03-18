@@ -1,0 +1,52 @@
+<div class="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg">
+  <h2 class="text-2xl font-bold text-center mb-4 text-pink-600">Confirmar pedido</h2>
+
+  <!-- Información del usuario -->
+  <div class="mb-6">
+    <p class="font-medium text-pink-600">Nombre del usuario: {{ user?.name || 'Usuario desconocido' }}</p>
+    <div class="mt-4">
+      <label for="address" class="block text-sm font-medium text-gray-700">Dirección de entrega</label>
+      <input
+        id="address"
+        type="text"
+        [(ngModel)]="address"
+        class="mt-1 block w-full border border-gray-300 rounded-md p-2 text-black text-sm placeholder-gray-500"
+        placeholder="Ingresa tu dirección"
+      />
+    </div>
+    <div class="mt-4">
+      <label for="phone" class="block text-sm font-medium text-gray-700">Teléfono de contacto</label>
+      <input
+        id="phone"
+        type="text"
+        [(ngModel)]="phone"
+        class="mt-1 block w-full border border-gray-300 rounded-md p-2 text-black text-sm placeholder-gray-500"
+        placeholder="Ingresa tu teléfono"
+      />
+    </div>
+  </div>
+
+  <!-- Lista de productos -->
+  <ul class="space-y-2">
+    @for (item of cart; track item.product.id) {
+      <li class="flex justify-between items-center">
+        <div>
+          <p class="font-medium text-black dark:text-white">{{ item.product.name || 'Producto sin nombre' }}</p>
+          <p class="text-sm text-gray-600">{{ item.quantity }} x ${{ item.product.price }}</p>
+        </div>
+        <p class="text-green-600 font-bold">${{ item.quantity * item.product.price }}</p>
+      </li>
+    }
+  </ul>
+
+  <!-- Total -->
+  <p class="text-xl font-bold text-right mt-4 text-black dark:text-white">Total: ${{ total }}</p>
+
+  <!-- Botón de confirmación -->
+  <button
+    (click)="confirmOrder()"
+    class="mt-6 bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700 w-full transition duration-300 shadow-md hover:shadow-lg"
+  >
+    Confirmar pedido
+  </button>
+</div>

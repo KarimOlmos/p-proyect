@@ -1,0 +1,48 @@
+<div class="container mx-auto p-4">
+  <!-- Título -->
+  <h1 class="text-2xl font-bold text-center mb-6">Mis Pedidos</h1>
+
+  <!-- Mensaje de carga -->
+  <div *ngIf="loading" class="text-center text-gray-500">
+    <p>Cargando pedidos...</p>
+  </div>
+
+  <!-- Lista de pedidos -->
+  @if (!loading && orders.length > 0) {
+    <div class="space-y-4">
+      @for (order of orders; track trackById($index, order)) {
+        <div class="bg-gray-300 shadow-md rounded-lg p-4 space-y-2">
+          <!-- Encabezado del pedido -->
+          <div class="flex justify-between items-center">
+            <h2 class="text-lg text-black font-semibold">Pedido de {{ order.userName }}</h2>
+          </div>
+
+          <!-- Detalles del pedido -->
+          <div class="space-y-1">
+            <p class="text-black"><strong>Total:</strong> ${{ order.total.toFixed(2) }}</p>
+            <p class="text-black"><strong>Dirección:</strong> {{ order.address }}</p>
+            <p class="text-black"><strong>Teléfono:</strong> {{ order.phone }}</p>
+          </div>
+
+          <!-- Lista de productos -->
+          <div class="space-y-2">
+            <h3 class="text-md font-medium text-black">Productos:</h3>
+            <ul class="list-disc pl-5">
+              @for (product of order.products; track product.productId) {
+                <li  class="text-black">
+                  {{ product.name }} - Cantidad: {{ product.quantity }} -
+                  Precio unitario: ${{ product.price.toFixed(2) }}
+                </li>
+              }
+            </ul>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <!-- Mensaje si no hay pedidos -->
+    <div *ngIf="!loading" class="text-center text-gray-500">
+      <p  class="text-black">No tienes pedidos registrados.</p>
+    </div>
+  }
+</div>

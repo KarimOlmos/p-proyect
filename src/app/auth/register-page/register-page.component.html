@@ -1,0 +1,109 @@
+<body class="bg-gradient-to-r from-pink-600 via-black to-pink-600">
+  <!-- Contenedor principal -->
+  <div class="flex justify-center items-center min-h-screen p-6">
+
+    <!-- Formulario de Registro -->
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full sm:w-96">
+      <h2 class="text-3xl font-semibold text-center text-pink-600 mb-6">Registrarse</h2>
+
+      <!-- Formulario -->
+      <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+
+        <!-- Nombre de Usuario -->
+        <div class="mb-4">
+          <label for="username" class="block text-lg text-black">Nombre de Usuario</label>
+          <input
+            type="text"
+            id="username"
+            formControlName="username"
+            class="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
+            placeholder="Introduce tu nombre de usuario"
+          />
+          <div class="text-red-500" [class.hidden]="registerForm.get('username')?.valid || !registerForm.get('username')?.touched">
+            El nombre de usuario es obligatorio.
+          </div>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="mb-4">
+          <label for="password" class="block text-lg text-black">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            formControlName="password"
+            class="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
+            placeholder="Introduce tu contraseña"
+          />
+          <div class="text-red-500" [class.hidden]="registerForm.get('password')?.valid || !registerForm.get('password')?.touched">
+            La contraseña debe tener al menos 6 caracteres.
+          </div>
+        </div>
+
+        <!-- Nombre Completo -->
+        <div class="mb-4">
+          <label for="name" class="block text-lg text-black">Nombre Completo</label>
+          <input
+            type="text"
+            id="name"
+            formControlName="name"
+            class="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
+            placeholder="Introduce tu nombre completo"
+          />
+        </div>
+
+        <!-- Correo Electrónico -->
+        <div class="mb-4">
+          <label for="email" class="block text-lg text-black">Correo Electrónico</label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            class="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
+            placeholder="Introduce tu correo"
+          />
+          <div class="text-red-500" [class.hidden]="registerForm.get('email')?.valid || !registerForm.get('email')?.touched">
+            El correo electrónico es obligatorio y debe ser válido.
+          </div>
+        </div>
+
+        <!-- Dirección -->
+        <div class="mb-4">
+          <label for="address" class="block text-lg text-black">Dirección</label>
+          <input
+            type="text"
+            id="address"
+            formControlName="address"
+            class="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
+            placeholder="Introduce tu dirección"
+          />
+        </div>
+
+        <!-- Edad -->
+        <div class="mb-4">
+          <label for="age" class="block text-lg text-black">Edad</label>
+          <input
+            type="number"
+            id="age"
+            formControlName="age"
+            class="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
+            placeholder="Introduce tu edad"
+          />
+          <div class="text-red-500" [class.hidden]="registerForm.get('age')?.valid || !registerForm.get('age')?.touched">
+            Debes ser mayor de 18 años.
+          </div>
+        </div>
+
+        <!-- Botón de Registro -->
+        <div class="mb-6">
+          <button
+            type="submit"
+            class="w-full py-3 bg-pink-600 text-white text-lg font-semibold rounded-lg hover:bg-pink-700 transition-colors duration-300"
+            [disabled]="registerForm.invalid"
+          >
+            Registrar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>

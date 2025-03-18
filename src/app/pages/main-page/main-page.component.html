@@ -1,0 +1,62 @@
+<body class="flex flex-col min-h-screen relative" style="background-image: url('https://i.imgur.com/bxQo5rm.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+  <div class="absolute inset-0 bg-black opacity-30"></div> <!-- Capa de sombra -->
+
+  <!-- Sección del título -->
+  <section class="text-center mt-20 relative">
+    <h1 class="text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600 uppercase tracking-tight leading-none animate-fade-in">
+      Disfruta de los<br />
+      <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">mejores locales</span>
+    </h1>
+    <p class="mt-4 text-lg font-medium text-white animate-fade-in-delay">
+      Encuentra los espacios perfectos para vivir momentos inolvidables.
+    </p>
+    <br>
+  </section>
+
+  <style>
+    /* Animación de entrada */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 1s ease-out;
+    }
+
+    .animate-fade-in-delay {
+      animation: fadeIn 1.5s ease-out;
+      animation-delay: 0.3s;
+    }
+  </style>
+
+  <!-- Sección del carrusel -->
+  <section class="w-full pb-20 relative">
+    <div class="carousel w-full">
+      <div id="item1" class="carousel-item w-full flex justify-center">
+        <img src="https://i.imgur.com/80TIUxU.png" class="w-[70%] rounded-lg shadow-lg" />
+      </div>
+      <div id="item2" class="carousel-item w-full flex justify-center">
+        <img src="https://i.imgur.com/oAYAngn.png" class="w-[70%] rounded-lg shadow-lg" />
+      </div>
+      <div id="item3" class="carousel-item w-full flex justify-center">
+        <img src="https://i.imgur.com/IeuRNGV.png" class="w-[70%] rounded-lg shadow-lg" />
+      </div>
+      <div id="item4" class="carousel-item w-full flex justify-center">
+        <img src="https://i.imgur.com/QfbJW0D.png" class="w-[70%] rounded-lg shadow-lg" />
+      </div>
+    </div>
+    <div class="flex w-full justify-center gap-2 py-4">
+      <a href="#item1" class="btn btn-xs bg-pink-100 text-pink-600 hover:bg-pink-200 transition-colors duration-300">1</a>
+      <a href="#item2" class="btn btn-xs bg-pink-100 text-pink-600 hover:bg-pink-200 transition-colors duration-300">2</a>
+      <a href="#item3" class="btn btn-xs bg-pink-100 text-pink-600 hover:bg-pink-200 transition-colors duration-300">3</a>
+      <a href="#item4" class="btn btn-xs bg-pink-100 text-pink-600 hover:bg-pink-200 transition-colors duration-300">4</a>
+    </div>
+  </section>
+</body>

@@ -1,0 +1,39 @@
+<div class="flex h-screen">
+  <!-- Contenido Principal: Productos -->
+  <div class="flex-1 p-3 overflow-y-auto">
+    <!-- Sección de Pizzas -->
+    <h2 class="text-3xl font-bold capitalize mt-6 mb-2 text-pink-600">Pizzas</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+      @for (product of productService.products(); track product.id) {
+        @if (product.category === 'pizza') {
+          <product-card [product]="product"></product-card>
+        }
+      }
+    </div>
+
+    <!-- Sección de Bebidas -->
+    <h2 class="text-3xl font-bold capitalize mt-6 mb-2 text-pink-600">Bebidas</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+      @for (product of productService.products(); track product.id) {
+        @if (product.category === 'drink') {
+          <product-card [product]="product"></product-card>
+        }
+      }
+    </div>
+
+    <!-- Sección de Postres -->
+    <h2 class="text-3xl font-bold capitalize mt-6 mb-2 text-pink-600">Postres</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+      @for (product of productService.products(); track product.id) {
+        @if (product.category === 'dessert') {
+          <product-card [product]="product"></product-card>
+        }
+      }
+    </div>
+  </div>
+
+
+
+
+    <app-cart/>
+</div>
