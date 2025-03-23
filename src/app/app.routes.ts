@@ -9,6 +9,7 @@ import { AboutUsPageComponent } from './pages/about-us-page/about-us-page.compon
 import { ProfilePageComponent } from './auth/profile-page/profile-page.component';
 import { OrderConfirmationComponent } from './order/pages/order-confirmation/order-confirmation.component';
 import { OrderDetailsComponent } from './order/pages/order-detail/order-detail.component';
+import { PaymentCompleteComponent } from './order/pages/payment-complete/payment-complete.component';
 
 export const routes: Routes = [
 
@@ -32,6 +33,8 @@ export const routes: Routes = [
   { path: 'order-confirmation', component: OrderConfirmationComponent},
 
   { path: 'order-detail', component: OrderDetailsComponent},
+
+  { path: 'payment-complete', component: PaymentCompleteComponent},
 
   { path: '**', component: Error404PageComponent },
 

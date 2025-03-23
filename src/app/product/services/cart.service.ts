@@ -31,7 +31,8 @@ export class CartService {
   }
 
   calculateTotal(): number {
-    return this.cart.reduce((total, item) => total + item.product.price * item.quantity, 0);
+    const total = this.cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+    return parseFloat(total.toFixed(2)); // Mantiene dos decimales
   }
 
   addToCart(cartItem: CartItem): void {

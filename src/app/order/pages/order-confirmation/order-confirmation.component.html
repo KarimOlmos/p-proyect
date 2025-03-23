@@ -32,9 +32,9 @@
       <li class="flex justify-between items-center">
         <div>
           <p class="font-medium text-black dark:text-white">{{ item.product.name || 'Producto sin nombre' }}</p>
-          <p class="text-sm text-gray-600">{{ item.quantity }} x ${{ item.product.price }}</p>
+          <p class="text-sm text-gray-600">{{ item.quantity }} x ${{ item.product.price| number:'1.2-2' }}</p>
         </div>
-        <p class="text-green-600 font-bold">${{ item.quantity * item.product.price }}</p>
+        <p class="text-green-600 font-bold">${{ (item.quantity * item.product.price) | number:'1.2-2' }}</p>
       </li>
     }
   </ul>
@@ -44,7 +44,7 @@
 
   <!-- Botón de confirmación -->
   <button
-    (click)="confirmOrder()"
+    (click)="proceedToPayment()"
     class="mt-6 bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700 w-full transition duration-300 shadow-md hover:shadow-lg"
   >
     Confirmar pedido

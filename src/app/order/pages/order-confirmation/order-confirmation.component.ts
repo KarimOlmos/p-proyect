@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { CartService } from '../../../product/services/cart.service';
 import { OrderService } from '../../services/order.service';
 import { AuthService } from '../../../auth/services/auth-service.service';
-import { Order } from '../../interfaces/order.interface';
+import { PaymentService } from '../../../product/services/payment.service';
 
 @Component({
   selector: 'app-order-confirmation',
   templateUrl: './order-confirmation.component.html',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
 })
 export class OrderConfirmationComponent implements OnInit {
   cart: any[] = [];
@@ -21,70 +22,72 @@ export class OrderConfirmationComponent implements OnInit {
 
   constructor(
     private cartService: CartService,
+    private paymentService: PaymentService,
     private orderService: OrderService,
     private authService: AuthService,
     private router: Router
   ) {}
 
   async ngOnInit(): Promise<void> {
-    this.cart = this.cartService.getCart();
-    this.total = this.cartService.calculateTotal();
-
     try {
-      // Cargar los datos completos del usuario
+      // Espera a que el estado del usuario esté listo
+      const isAuthenticated = await this.authService.waitForAuthReady();
+      if (!isAuthenticated) {
+        throw new Error('Usuario no autenticado');
+      }
+
+      // Obtiene los datos completos del usuario
       this.user = await this.authService.getCurrentUserFullData();
-      console.log('Datos del usuario cargados:', this.user);
-    } catch (error) {
-      console.error('Error al cargar los datos del usuario:', error);
+
+      // Carga el carrito y calcula el total
+      this.cart = this.cartService.getCart();
+      this.total = this.cartService.calculateTotal();
+
+      // Recupera los datos temporales almacenados en el servicio
+      const tempOrderData = this.orderService.getTempOrderData();
+      this.address = tempOrderData.address || '';
+      this.phone = tempOrderData.phone || '';
+    } catch (error: any) {
+      console.error('Error al cargar los datos del usuario:', error.message);
       alert('Debes iniciar sesión para realizar un pedido.');
       this.router.navigate(['/login']); // Redirige al login si no hay usuario
     }
   }
 
-  async confirmOrder(): Promise<void> {
+  proceedToPayment(): void {
     if (!this.address.trim() || !this.phone.trim()) {
       alert('Por favor, completa todos los campos.');
       return;
     }
 
-    const orderData: Order = {
-      userId: this.user.uid,
-      userName: this.user.name || 'Usuario desconocido',
-      products: this.cart.map((item) => ({
-        productId: item.product.id,
-        name: item.product.name || 'Producto sin nombre',
-        quantity: item.quantity,
-        price: item.product.price,
-      })),
-      total: this.total,
-      address: this.address,
-      phone: this.phone,
-    };
+    // Guarda los datos ingresados en el servicio
+    this.orderService.setTempOrderData({ address: this.address, phone: this.phone });
+    console.log('Datos almacenados temporalmente:', { address: this.address, phone: this.phone });
 
-    console.log('UID del usuario autenticado:', this.user.uid);
-    console.log('UID en orderData:', orderData.userId);
-    console.log('Datos del pedido:', orderData);
+    const orderId = 'pedido-' + Math.random().toString(36).substr(2, 9); // Genera un ID único
+    const amount = this.total; // Total en céntimos
 
+    // Verifica que los datos se hayan guardado correctamente
+    const tempOrderData = this.orderService.getTempOrderData();
+    console.log('Datos temporales después de setTempOrderData:', tempOrderData);
 
-    try {
-      await this.orderService.createOrder(orderData);
-      alert('Pedido realizado con éxito.');
-      this.router.navigate(['/']);
-    } catch (error: any) {
-      console.error('Error al confirmar el pedido:', error);
-
-      // Verificar si el error indica que el usuario no está autenticado
-      if (error.message === 'Usuario no autenticado') {
-        alert('Debes iniciar sesión para realizar un pedido.');
-        this.router.navigate(['/login']);
-      } else {
-        alert('Ocurrió un error al realizar el pedido. Inténtalo de nuevo.');
+    this.paymentService.createPayment(amount, orderId).subscribe(
+      (response: any) => {
+        // Abre el formulario de pago en una nueva pestaña sin recargar la página
+        window.open(response.paymentUrl, '_blank');
+      },
+      (error) => {
+        alert('Error al procesar el pago');
       }
-    }
-    this.clearCart();
+    );
   }
 
   clearCart(): void {
     this.cartService.clearCart();
   }
+
+  ngOnDestroy(): void {
+    console.log('El componente OrderConfirmationComponent ha sido destruido.');
+  }
+
 }
