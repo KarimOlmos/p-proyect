@@ -1,21 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService } from '../services/auth-service.service'; // Importamos el servicio de autenticación
+import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile-page',
   templateUrl: './profile-page.component.html',
   imports: [ReactiveFormsModule],
-  standalone: true, // Asegúrate de que el componente sea standalone si usas Angular 17+
+  standalone: true,
 })
 export class ProfilePageComponent implements OnInit {
-  profileForm!: FormGroup; // Formulario para editar el perfil
-  passwordForm!: FormGroup; // Formulario para cambiar la contraseña
-  userData: any = null; // Datos del usuario obtenidos de Firestore
-  isEditing = false; // Estado para controlar el modo edición
-  isChangingPassword = false; // Estado para controlar el cambio de contraseña
-  errorMessage: string | null = null; // Mensaje de error
+  profileForm!: FormGroup;
+  passwordForm!: FormGroup;
+  userData: any = null;
+  isEditing = false;
+  isChangingPassword = false;
+  errorMessage: string | null = null;
 
   constructor(
     private authService: AuthService,
@@ -24,21 +24,35 @@ export class ProfilePageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.initProfileForm();
-    this.initPasswordForm();
-    this.loadUserData();
+    this.waitForUserAndLoadData();
   }
 
-  // Inicializa el formulario de perfil
+  private async waitForUserAndLoadData(): Promise<void> {
+    try {
+      const isAuthenticated = await this.authService.waitForAuthReady();
+      if (isAuthenticated) {
+        this.initProfileForm();
+        this.initPasswordForm();
+        await this.loadUserData();
+      } else {
+        this.errorMessage = 'No se encontró ningún usuario autenticado.';
+      }
+    } catch (error) {
+      console.error('Error al esperar al usuario:', error);
+      this.errorMessage = 'Error al verificar el estado del usuario.';
+    }
+  }
+
   private initProfileForm(): void {
     this.profileForm = this.fb.group({
-      name: ['', Validators.required],
-      address: ['', Validators.required],
-      age: [null, [Validators.required, Validators.min(0)]],
+      name: [{ value: '', disabled: true }, Validators.required],
+      address: [{ value: '', disabled: true }, Validators.required],
+      age: [{ value: null, disabled: true }, [Validators.required, Validators.min(0)]],
+      gender: [{ value: '', disabled: true }],
+      photoURL: [{ value: '', disabled: true }],
     });
   }
 
-  // Inicializa el formulario de cambio de contraseña
   private initPasswordForm(): void {
     this.passwordForm = this.fb.group({
       currentPassword: ['', Validators.required],
@@ -46,14 +60,19 @@ export class ProfilePageComponent implements OnInit {
     });
   }
 
-  // Carga los datos del usuario desde Firestore
   private async loadUserData(): Promise<void> {
     try {
       const user = this.authService.auth.currentUser;
       if (user) {
         const userData = await this.authService.getUserData(user.uid);
-        this.userData = userData;
-        this.profileForm.patchValue(userData); // Rellena el formulario con los datos actuales
+        this.userData = {
+          name: userData.name || '', // Valor predeterminado si no hay nombre
+          address: userData.address || '', // Valor predeterminado si no hay dirección
+          age: userData.age || null, // Valor predeterminado si no hay edad
+          gender: userData.gender || '', // Valor predeterminado si no hay género
+          photoURL: userData.photoURL || 'https://i.imgur.com/DfIXxgm.jpg', // Valor predeterminado si no hay foto
+        };
+        this.profileForm.patchValue(this.userData); // Rellena el formulario con los datos cargados
       } else {
         this.errorMessage = 'No se encontró ningún usuario autenticado.';
       }
@@ -63,18 +82,17 @@ export class ProfilePageComponent implements OnInit {
     }
   }
 
-  // Habilita el modo edición
   enableEditing(): void {
     this.isEditing = true;
+    this.profileForm.enable(); // Habilita todos los campos del formulario
   }
 
-  // Cancela el modo edición
   cancelEditing(): void {
     this.isEditing = false;
     this.profileForm.patchValue(this.userData); // Restaura los valores originales
+    this.profileForm.disable(); // Deshabilita todos los campos del formulario
   }
 
-  // Guarda los cambios realizados en el perfil
   async saveChanges(): Promise<void> {
     if (this.profileForm.invalid) {
       this.errorMessage = 'Por favor, completa todos los campos correctamente.';
@@ -84,16 +102,17 @@ export class ProfilePageComponent implements OnInit {
     try {
       const user = this.authService.auth.currentUser;
       if (user) {
-        // Actualiza los datos en Firestore
         await this.authService.updateUserData(
           this.profileForm.value.name,
           this.profileForm.value.address,
-          this.profileForm.value.age
+          this.profileForm.value.age,
+          this.profileForm.value.gender, // Nuevo campo: género
+          this.profileForm.value.photoURL // Nuevo campo: URL de la foto
         );
 
-        // Actualiza los datos locales
-        this.userData = { ...this.userData, ...this.profileForm.value };
+        this.userData = { ...this.userData, ...this.profileForm.value }; // Actualiza los datos locales
         this.isEditing = false;
+        this.profileForm.disable(); // Deshabilita el formulario después de guardar
         this.errorMessage = null;
       } else {
         this.errorMessage = 'No se encontró ningún usuario autenticado.';
@@ -104,18 +123,15 @@ export class ProfilePageComponent implements OnInit {
     }
   }
 
-  // Habilita el modo de cambio de contraseña
   enablePasswordChange(): void {
     this.isChangingPassword = true;
   }
 
-  // Cancela el modo de cambio de contraseña
   cancelPasswordChange(): void {
     this.isChangingPassword = false;
-    this.passwordForm.reset(); // Limpia el formulario
+    this.passwordForm.reset();
   }
 
-  // Cambia la contraseña
   async changePassword(): Promise<void> {
     if (this.passwordForm.invalid) {
       this.errorMessage = 'Por favor, completa todos los campos correctamente.';
@@ -127,10 +143,7 @@ export class ProfilePageComponent implements OnInit {
     try {
       const user = this.authService.auth.currentUser;
       if (user && user.email) {
-        // Reautentica al usuario con la contraseña actual
         await this.authService.reauthenticateAndChangePassword(currentPassword, newPassword);
-
-        // Limpia el formulario y desactiva el modo de cambio de contraseña
         this.cancelPasswordChange();
         this.errorMessage = null;
       } else {

@@ -72,13 +72,27 @@
 
   <div class="navbar-end">
     <!-- El nuevo botón de "Ver perfil" o "Registrarse" -->
-    <a routerLink="{{ isLoggedIn ? '/profile' : '/register' }}" class="btn btn-ghost">
-      {{ isLoggedIn ? 'Ver perfil' : 'Registrarse' }}
+    <a
+      routerLink="{{ isLoggedIn ? '/profile' : '/register' }}"
+      class="btn btn-ghost flex items-center space-x-2"
+    >
+      <span>{{ isLoggedIn ? 'Ver perfil' : 'Registrarse' }}</span>
+            <!-- Muestra la foto de perfil si está disponible -->
+            <img
+            *ngIf="isLoggedIn && userProfilePicture"
+            [src]="userProfilePicture"
+            alt="Foto de perfil"
+            class="w-8 h-8 rounded-full object-cover border border-gray-300"
+          />
     </a>
 
     <!-- El botón de login/logout -->
     <li style="list-style-type: none;">
-      <a routerLink="{{ isLoggedIn ? '/' : '/login' }}" (click)="onLogout()" class="btn btn-ghost">
+      <a
+        routerLink="{{ isLoggedIn ? '/' : '/login' }}"
+        (click)="onLogout()"
+        class="btn btn-ghost"
+      >
         {{ isLoggedIn ? 'Cerrar sesión' : 'Iniciar sesión' }}
       </a>
     </li>

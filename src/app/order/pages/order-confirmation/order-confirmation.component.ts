@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CartService } from '../../../product/services/cart.service';
 import { OrderService } from '../../services/order.service';
-import { AuthService } from '../../../auth/services/auth-service.service';
+import { AuthService } from '../../../auth/services/auth.service';
 import { PaymentService } from '../../../product/services/payment.service';
 
 @Component({

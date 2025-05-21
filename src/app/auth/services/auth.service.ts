@@ -10,12 +10,7 @@ import {
 } from '@angular/fire/auth';
 import { Firestore, doc, getDoc, setDoc, updateDoc } from '@angular/fire/firestore';
 import { BehaviorSubject } from 'rxjs';
-
-interface UserData {
-  name?: string;
-  address?: string;
-  age?: number;
-}
+import { UserData } from '../interfaces/user-data.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -32,33 +27,46 @@ export class AuthService {
 
     // Observar el estado del usuario cuando cambia
     this.auth.onAuthStateChanged((user) => {
-      console.log('Estado del usuario cambiado:', user); // Agrega un log para depurar
-      this.userSubject.next(user); // Actualiza el estado del usuario
+      if (user) {
+        console.log('Usuario autenticado detectado al cargar:', user);
+        this.userSubject.next(user); // Actualiza el estado del usuario
+
+        // Cargar datos adicionales del usuario desde Firestore
+        this.getUserData(user.uid)
+          .then((userData) => {
+            console.log('Datos adicionales del usuario cargados:', userData);
+            this.userSubject.next({ ...user, ...userData }); // Combina los datos de Firebase Auth con los de Firestore
+          })
+          .catch((error) => {
+            console.error('Error al obtener los datos del usuario:', error);
+            this.userSubject.next(null); // Si hay un error, establece el estado del usuario como nulo
+          });
+      } else {
+        console.log('No hay usuario autenticado al cargar la aplicación.');
+        this.userSubject.next(null); // Establece el estado del usuario como nulo
+      }
     });
   }
 
-/**
- * Espera a que el estado del usuario esté listo.
- * @returns Promise<boolean> - True si el usuario está autenticado, false si no lo está.
- */
-async waitForAuthReady(): Promise<boolean> {
-  return new Promise((resolve) => {
-    // Suscribirse al BehaviorSubject para detectar cambios en el estado del usuario
-    const subscription = this.userSubject.subscribe((user) => {
-      if (user !== undefined && user !== null) {
-        //subscription.unsubscribe(); // Cancela la suscripción cuando el estado está listo
-        resolve(!!user); // Resuelve con true si el usuario está autenticado
+  /**
+   * Espera a que el estado del usuario esté listo.
+   * @returns Promise<boolean> - True si el usuario está autenticado, false si no lo está.
+   */
+  async waitForAuthReady(): Promise<boolean> {
+    return new Promise((resolve) => {
+      const subscription = this.userSubject.subscribe((user) => {
+        if (user !== undefined && user !== null) {
+          resolve(!!user); // Resuelve con true si el usuario está autenticado
+        }
+      });
+
+      const currentUser = this.userSubject.value;
+      if (currentUser !== undefined && currentUser !== null) {
+        subscription.unsubscribe(); // Cancela la suscripción inmediatamente
+        resolve(!!currentUser);
       }
     });
-
-    // Manejar el caso en que el estado del usuario ya esté disponible
-    const currentUser = this.userSubject.value;
-    if (currentUser !== undefined && currentUser !== null) {
-      subscription.unsubscribe(); // Cancela la suscripción inmediatamente
-      resolve(!!currentUser);
-    }
-  });
-}
+  }
 
   /**
    * Inicia sesión con correo y contraseña
@@ -86,7 +94,13 @@ async waitForAuthReady(): Promise<boolean> {
    * @param age Edad del usuario
    * @returns Promise<User>
    */
-  async register(email: string, password: string, name: string, address: string, age: number): Promise<User> {
+  async register(
+    email: string,
+    password: string,
+    name: string,
+    address: string,
+    age: number
+  ): Promise<User> {
     try {
       // Crear usuario en Firebase Authentication
       const userCredential: UserCredential = await createUserWithEmailAndPassword(this.auth, email, password);
@@ -139,12 +153,27 @@ async waitForAuthReady(): Promise<boolean> {
    * @param name Nuevo nombre
    * @param address Nueva dirección
    * @param age Nueva edad
+   * @param gender Nuevo género (opcional)
+   * @param photoURL Nueva URL de la foto (opcional)
    */
-  async updateUserData(name: string, address: string, age: number) {
+  async updateUserData(
+    name: string,
+    address: string,
+    age: number,
+    gender?: 'Male' | 'Female',
+    photoURL?: string
+  ) {
     const user = this.auth.currentUser;
     if (user) {
       const userRef = doc(this.firestore, `users/${user.uid}`);
-      await updateDoc(userRef, { name, address, age });
+      const updateData: any = { name, address, age };
+      if (gender) {
+        updateData.gender = gender; // Agrega el género si existe
+      }
+      if (photoURL) {
+        updateData.photoURL = photoURL; // Agrega la URL de la foto si existe
+      }
+      await updateDoc(userRef, updateData);
     }
   }
 
@@ -169,9 +198,12 @@ async waitForAuthReady(): Promise<boolean> {
   async getUserData(uid: string): Promise<UserData> {
     const userRef = doc(this.firestore, `users/${uid}`);
     const docSnap = await getDoc(userRef);
-
     if (docSnap.exists()) {
-      return docSnap.data() as UserData; // Retorna los datos del usuario
+      const userData = docSnap.data() as UserData;
+      return {
+        ...userData,
+        photoURL: userData.photoURL || 'https://i.imgur.com/DfIXxgm.jpg', // Valor predeterminado si no hay foto
+      };
     } else {
       throw new Error('No se encontraron datos del usuario');
     }

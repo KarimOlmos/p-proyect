@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CartService } from '../../../product/services/cart.service';
 import { OrderService } from '../../services/order.service';
-import { AuthService } from '../../../auth/services/auth-service.service';
+import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-payment-complete',

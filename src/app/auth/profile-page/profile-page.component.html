@@ -1,9 +1,8 @@
 <body class="bg-gradient-to-r from-pink-600 via-black to-pink-600">
-
   <!-- Contenedor principal -->
   <div class="flex justify-center items-center min-h-screen p-6">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full sm:w-96">
-      <h2 class="text-3xl font-semibold text-center text-pink-600 mb-6">Mi Perfil</h2>
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full sm:w-96 space-y-6">
+      <h2 class="text-3xl font-semibold text-center text-pink-600 mb-4">Mi Perfil</h2>
 
       <!-- Mostrar mensaje de error -->
       @if (errorMessage) {
@@ -11,51 +10,94 @@
       }
 
       <!-- Formulario de perfil -->
-      <form [formGroup]="profileForm">
-        <div class="mb-4">
+      <form [formGroup]="profileForm" class="space-y-8">
+        <!-- Foto de perfil -->
+        <div class="flex flex-col items-center space-y-4">
+          <img
+            [src]="userData?.photoURL || 'https://i.imgur.com/DfIXxgm.jpg'"
+            alt="Foto de perfil"
+            class="w-32 h-32 rounded-full object-cover border-4 border-pink-600 shadow-md"
+          />
+          <label for="photoURL" class="block text-lg text-black">Foto de Perfil</label>
+
+        </div>
+
+        <!-- Nombre -->
+        <div>
           <label for="name" class="block text-lg text-black">Nombre</label>
           <input
             type="text"
             id="name"
             formControlName="name"
             [readonly]="!isEditing"
-            class="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
             placeholder="Introduce tu nombre"
           />
         </div>
 
-        <div class="mb-4">
+        <!-- Dirección -->
+        <div>
           <label for="address" class="block text-lg text-black">Dirección</label>
           <input
             type="text"
             id="address"
             formControlName="address"
             [readonly]="!isEditing"
-            class="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
             placeholder="Introduce tu dirección"
           />
         </div>
 
-        <div class="mb-6">
+        <!-- Edad -->
+        <div>
           <label for="age" class="block text-lg text-black">Edad</label>
           <input
             type="number"
             id="age"
             formControlName="age"
             [readonly]="!isEditing"
-            class="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
             placeholder="Introduce tu edad"
           />
         </div>
 
+        <!-- Género -->
+        <div>
+          <label for="gender" class="block text-lg text-black">Género</label>
+          <select
+            id="gender"
+            formControlName="gender"
+            [disabled]="!isEditing"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
+          >
+            <option value="">Selecciona tu género</option>
+            <option value="Male">Masculino</option>
+            <option value="Female">Femenino</option>
+          </select>
+        </div>
+
+
+                <!-- Cambiar foto de perfil -->
+                <div>
+                  <label for="age" class="block text-lg text-black">Foto de perfil</label>
+                  <input
+            type="text"
+            id="photoURL"
+            formControlName="photoURL"
+            [readonly]="!isEditing"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
+            placeholder="Introduce la URL de tu foto"
+          />
+                </div>
+
         <!-- Botones de acción -->
-        <div class="flex justify-between">
+        <div class="flex justify-between space-x-4">
           <!-- Botón Editar -->
           <button
             type="button"
             (click)="enableEditing()"
             [class.hidden]="isEditing"
-            class="w-1/2 py-3 bg-pink-600 text-white text-lg font-semibold rounded-lg hover:bg-pink-700 transition-colors duration-300 mr-2"
+            class="w-full py-3 bg-pink-600 text-white text-lg font-semibold rounded-lg hover:bg-pink-700 transition-colors duration-300"
           >
             Editar
           </button>
@@ -65,7 +107,7 @@
             type="button"
             (click)="saveChanges()"
             [class.hidden]="!isEditing"
-            class="w-1/2 py-3 bg-green-600 text-white text-lg font-semibold rounded-lg hover:bg-green-700 transition-colors duration-300 mr-2"
+            class="w-full py-3 bg-green-600 text-white text-lg font-semibold rounded-lg hover:bg-green-700 transition-colors duration-300"
           >
             Guardar
           </button>
@@ -75,7 +117,7 @@
             type="button"
             (click)="cancelEditing()"
             [class.hidden]="!isEditing"
-            class="w-1/2 py-3 bg-gray-600 text-white text-lg font-semibold rounded-lg hover:bg-gray-700 transition-colors duration-300 ml-2"
+            class="w-full py-3 bg-gray-600 text-white text-lg font-semibold rounded-lg hover:bg-gray-700 transition-colors duration-300"
           >
             Cancelar
           </button>
@@ -83,65 +125,62 @@
       </form>
 
       <!-- Cambio de Contraseña -->
-<div class="mt-6">
-  <!-- Botón para habilitar el cambio de contraseña -->
-  <button
-    type="button"
-    (click)="enablePasswordChange()"
-    [class.hidden]="isChangingPassword"
-    class="w-full py-3 bg-green-600 text-white text-lg font-semibold rounded-lg hover:bg-yellow-600 transition-colors duration-300 mb-4"
-  >
-    Cambiar Contraseña
-  </button>
-
-  <!-- Formulario de cambio de contraseña -->
-  @if (isChangingPassword) {
-    <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
-      <div class="mb-4">
-        <label for="currentPassword" class="block text-lg text-black">Contraseña Actual</label>
-        <input
-          type="password"
-          id="currentPassword"
-          formControlName="currentPassword"
-          class="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
-          placeholder="Introduce tu contraseña actual"
-        />
-      </div>
-
-      <div class="mb-4">
-        <label for="newPassword" class="block text-lg text-black">Nueva Contraseña</label>
-        <input
-          type="password"
-          id="newPassword"
-          formControlName="newPassword"
-          class="w-full p-3 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
-          placeholder="Introduce tu nueva contraseña"
-        />
-      </div>
-
-      <!-- Botones de acción -->
-      <div class="flex justify-between">
-        <button
-          type="submit"
-          class="w-1/2 py-3 bg-green-600 text-white text-lg font-semibold rounded-lg hover:bg-green-700 transition-colors duration-300 mr-2"
-        >
-          Guardar
-        </button>
-
+      <div class="mt-6">
+        <!-- Botón para habilitar el cambio de contraseña -->
         <button
           type="button"
-          (click)="cancelPasswordChange()"
-          class="w-1/2 py-3 bg-gray-600 text-white text-lg font-semibold rounded-lg hover:bg-gray-700 transition-colors duration-300 ml-2"
+          (click)="enablePasswordChange()"
+          [class.hidden]="isChangingPassword"
+          class="w-full py-3 bg-green-600 text-white text-lg font-semibold rounded-lg hover:bg-yellow-600 transition-colors duration-300 mb-4"
         >
-          Cancelar
+          Cambiar Contraseña
         </button>
+
+        <!-- Formulario de cambio de contraseña -->
+        @if (isChangingPassword) {
+          <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="space-y-4">
+            <div>
+              <label for="currentPassword" class="block text-lg text-black">Contraseña Actual</label>
+              <input
+                type="password"
+                id="currentPassword"
+                formControlName="currentPassword"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
+                placeholder="Introduce tu contraseña actual"
+              />
+            </div>
+
+            <div>
+              <label for="newPassword" class="block text-lg text-black">Nueva Contraseña</label>
+              <input
+                type="password"
+                id="newPassword"
+                formControlName="newPassword"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
+                placeholder="Introduce tu nueva contraseña"
+              />
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="flex justify-between space-x-4">
+              <button
+                type="submit"
+                class="w-full py-3 bg-green-600 text-white text-lg font-semibold rounded-lg hover:bg-green-700 transition-colors duration-300"
+              >
+                Guardar
+              </button>
+
+              <button
+                type="button"
+                (click)="cancelPasswordChange()"
+                class="w-full py-3 bg-gray-600 text-white text-lg font-semibold rounded-lg hover:bg-gray-700 transition-colors duration-300"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        }
       </div>
-    </form>
-  }
-</div>
-
-
     </div>
   </div>
-
 </body>

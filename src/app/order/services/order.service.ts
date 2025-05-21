@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Firestore, collection, addDoc, getDocs, where, query } from '@angular/fire/firestore';
-import { AuthService } from '../../auth/services/auth-service.service';
+import { AuthService } from '../../auth/services/auth.service';
 import { Order } from '../interfaces/order.interface';
 
 @Injectable({

@@ -62,15 +62,20 @@
     }
   </ul>
 
-  <!-- Total y botón "Confirmar pedido" -->
   <div class="mt-4 text-center">
     <p class="font-bold text-xl text-green-600">Total: ${{ total | number:'1.2-2' }}</p>
     <button
-      class="mt-4 bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700 w-full transition duration-300 shadow-md hover:shadow-lg"
-      routerLink="/order-confirmation"
+      (click)="confirmOrder()"
+      [disabled]="!authService.isLoggedIn()"
+      class="mt-4 bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700 w-full transition duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
     >
       Confirmar pedido
     </button>
+
+    <!-- Mensaje opcional si no está autenticado -->
+    <p *ngIf="!authService.isLoggedIn()" class="text-red-500 text-sm mt-2">
+      Debes iniciar sesión para confirmar el pedido.
+    </p>
   </div>
 
 

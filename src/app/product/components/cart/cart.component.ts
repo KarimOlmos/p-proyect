@@ -2,8 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CartService } from '../../services/cart.service';
 import { Subscription } from 'rxjs';
 import { CartItem } from '../../interfaces/cart.interface';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-cart',
@@ -16,18 +17,20 @@ export class CartComponent implements OnInit, OnDestroy {
   total: number = 0;
   private cartSubscription!: Subscription;
 
-  constructor(private cartService: CartService) {}
+  constructor(
+    private cartService: CartService,
+    private router: Router,
+    public authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    // Suscribirse al Observable del carrito
     this.cartSubscription = this.cartService.getCartObservable().subscribe((updatedCart) => {
-      this.cart = updatedCart; // Actualiza el carrito
-      this.total = this.cartService.calculateTotal(); // Recalcula el total
+      this.cart = updatedCart;
+      this.total = this.cartService.calculateTotal();
     });
   }
 
   ngOnDestroy(): void {
-    // Desuscribirse para evitar fugas de memoria
     this.cartSubscription.unsubscribe();
   }
 
@@ -39,6 +42,11 @@ export class CartComponent implements OnInit, OnDestroy {
     this.cartService.clearCart();
   }
 
-
-
+  confirmOrder(): void {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/order-confirmation']);
+    } else {
+      this.router.navigate(['/login']); // Redirige al login si no está autenticado
+    }
+  }
 }
